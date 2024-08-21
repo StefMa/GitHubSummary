@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/:owner/:repo/issues/:issue",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/:owner/:repo/pull/:issue",
+      "destination": "/api/index"
+    }
+  ]
+}
