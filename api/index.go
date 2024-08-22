@@ -2,7 +2,9 @@ package api
 
 import (
     "bytes"
+    "embed"
     "github.com/ioki-mobility/summaraizer"
+    "html/template"
     "log"
     "net/http"
     "os"
@@ -20,14 +22,20 @@ Here is the discussion:
 
 var openAiToken = os.Getenv("OPENAI_API_TOKEN")
 
+//go:embed templates/*
+var templates embed.FS
+
 func Handler(w http.ResponseWriter, r *http.Request) {
     owner := r.URL.Query().Get("owner")
     repo := r.URL.Query().Get("repo")
     issue := r.URL.Query().Get("issue")
-    
+
     if owner != "" && repo != "" && issue != "" {
         summary := fetchAndSummarize(owner, repo, issue)
-        w.Write([]byte(summary))
+        tmpl := template.Must(template.ParseFS(templates, "templates/comment.html"))
+        var tpl bytes.Buffer
+        tmpl.Execute(&tpl, summary)
+        w.Write(tpl.Bytes())
         w.WriteHeader(http.StatusOK)
         return
     }
