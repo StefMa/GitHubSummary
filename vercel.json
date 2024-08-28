@@ -9,6 +9,10 @@
     {
       "source": "/:owner/:repo/pull/:issue",
       "destination": "/api/index"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/api/404"
     }
   ]
 }
