@@ -77,6 +77,38 @@ To be specific by v0.dev!
             line-height: 1.5;
         }
     </style>
+    <script>
+        if ({{ .Error }}) {
+            document.querySelector('.comment-body').innerHTML = "☠️ Something went wrong ☠️"
+        } else {
+            fetch('/api/summary', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    owner: "{{ .Owner }}",
+                    repo: "{{ .Repo }}",
+                    issue: "{{ .Issue }}"
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok')
+                }
+                return response
+            })
+            .then(response => response.json())
+            .then(data => {
+                const summaryHeader = "<sub>This is a AI generated summarization, powered by <a href=\"https://github.com/ioki-mobility/summaraizer\">summaraizer</a>:</sub></br></br>"
+                const summaryDecoded = atob(data.summarization)
+                document.querySelector('.comment-body').innerHTML = summaryHeader + summaryDecoded
+            })
+            .catch(_ => {
+                document.querySelector('.comment-body').innerHTML = "☠️ Something went wrong ☠️"
+            })
+        }
+    </script>
 </head>
 <body>
     <div class="comment-container">
@@ -84,13 +116,12 @@ To be specific by v0.dev!
         <div class="comment-content">
             <div class="comment-header">
                 <div class="comment-meta">
-                    <span class="comment-author">StefMa</span>
+                    <span class="comment-author">GitHubSummary[bot]</span>
                     <span class="comment-time">just now</span>
                 </div>
             </div>
             <div class="comment-body">
-                <sub>This is a AI generated summarization, powered by <a href="https://github.com/ioki-mobility/summaraizer">summaraizer</a>:</sub></br></br>
-                {{ . }}
+                <img src="https://i.imgur.com/VwXmegS.gif" width="22"/>
             </div>
         </div>
     </div>
